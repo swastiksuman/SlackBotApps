@@ -1,8 +1,8 @@
 const { App } = require('@slack/bolt');
 
 const app = new App({
-    token: '',
-    signingSecret: ''
+    token: process.env['SLACK_TOKEN'],
+    signingSecret: process.env['SLACK_SECRET']
 });
 
 (async () => {
@@ -18,6 +18,40 @@ const app = new App({
     await say(`Hey there <@${message.user}>!`);
   });
 
+  app.message('show view', async({ ack, body, client}) => {
+    try {
+      const result = await client.views.publish({
+        view_id: body.view.id,
+        hash: body.view.hash,
+        view: {
+          type: 'modal',
+          // View identifier
+          callback_id: 'view_1',
+          title: {
+            type: 'plain_text',
+            text: 'Updated modal'
+          },
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'plain_text',
+                text: 'You updated the modal!'
+              }
+            },
+            {
+              type: 'image',
+              image_url: 'https://media.giphy.com/media/SVZGEcYt7brkFUyU90/giphy.gif',
+              alt_text: 'Yay! The modal was updated'
+            }
+          ]
+        }
+      });
+    }catch (error) {
+      console.error(error);
+    }
+
+  });
   app.event('app_home_opened', async ({ event, client }) => {
     try {
       // Call views.publish with the built-in client
