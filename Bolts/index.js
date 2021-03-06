@@ -52,6 +52,46 @@ const app = new App({
     }
 
   });
+
+  app.message('test', ({ say }) => {
+    say({
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: ':zap: Welcome to the Bolt *Basic Template*',
+          },
+        },
+        {
+          type: 'divider',
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'plain_text',
+            text: 'Try an action',
+          },
+          accessory: {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Act',
+            },
+            action_id: 'my_action',
+            value: 'foo',
+          },
+        },
+      ],
+    });
+  });
+  
+  app.action('my_action', ({ ack, action, say }) => {
+    ack();
+    console.log(`An action occurred: ${action.value}`);
+    say('Surely, just as soon as you write the code. :sunglasses:');
+  });
+
   app.event('app_home_opened', async ({ event, client }) => {
     try {
       // Call views.publish with the built-in client
